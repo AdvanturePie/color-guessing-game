@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Guessing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        #color-box {
+            width: 150px;
+            height: 150px;
+            margin: 20px;
+            border: 2px solid #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        .option {
+            padding: 10px 15px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 40%;
+            text-align: center;
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #next-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+        #next-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Guessing Game</h1>
+    <div id="color-box"></div>
+    <div class="options" id="options-container"></div>
+    <div id="feedback"></div>
+    <button id="next-button" onclick="initializeGame()">Next Color</button>
+    <script>
+        let correctColor = '';
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function generateOptions(correctColor) {
+            const options = new Set();
+            options.add(correctColor);
+            while (options.size < 4) {
+                options.add(getRandomColor());
+            }
+            return Array.from(options);
+        }
+
+        function initializeGame() {
+            correctColor = getRandomColor();
+            document.getElementById('color-box').style.backgroundColor = correctColor;
+
+            const options = generateOptions(correctColor).sort(() => Math.random() - 0.5);
+            const optionsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('feedback');
+            const nextButton = document.getElementById('next-button');
+
+            optionsContainer.innerHTML = '';
+            feedback.textContent = '';
+            nextButton.style.display = 'none';
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option');
+                button.addEventListener('click', () => handleOptionClick(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleOptionClick(selectedColor, button) {
+            const feedback = document.getElementById('feedback');
+            const nextButton = document.getElementById('next-button');
+            if (selectedColor === correctColor) {
+                feedback.textContent = 'Correct!';
+                feedback.style.color = 'green';
+                nextButton.style.display = 'block';
+            } else {
+                feedback.textContent = `Wrong! Try again.`;
+                feedback.style.color = 'red';
+                button.style.backgroundColor = '#f8d7da'; // Highlight the wrong button in red.
+                button.style.cursor = 'not-allowed'; // Disable clicking it again.
+                button.disabled = true;
+            }
+        }
+
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
